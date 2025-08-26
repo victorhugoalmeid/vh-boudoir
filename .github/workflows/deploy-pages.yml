@@ -21,22 +21,25 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # PINA uma versão estável suportada pelo Vite 6
       - name: Setup Node 22.12
         uses: actions/setup-node@v4
         with:
           node-version: 22.12.0
           cache: 'npm'
 
-      # Instala sem dependências opcionais (que incluem os binários nativos do Rollup)
+      # instala dependências (sem opcionais) com fallback
       - name: Install deps (omit optional)
         run: npm ci --omit=optional || npm install --omit=optional
 
-      # Build com fallback JS do Rollup (sem nativo)
+      # instala o binário nativo do Rollup que corresponde à versão instalada
+      - name: Install Rollup native for Linux
+        run: |
+          VER=$(node -p "require('rollup/package.json').version")
+          echo "Using rollup $VER"
+          npm i @rollup/rollup-linux-x64-gnu@${VER} --no-save
+
       - name: Build
         run: npm run build
-        env:
-          ROLLUP_SKIP_NODEJS_NATIVE: "1"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
