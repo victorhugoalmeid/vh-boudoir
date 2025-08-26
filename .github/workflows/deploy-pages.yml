@@ -21,21 +21,18 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      # PINA uma versão estável suportada pelo Vite 6
       - name: Setup Node 22.12
         uses: actions/setup-node@v4
         with:
           node-version: 22.12.0
           cache: 'npm'
 
-      # EVITA instalar dependências opcionais (os binários nativos do Rollup)
-      - name: NPM config (no optional)
-        run: npm config set optional false
+      # Instala sem dependências opcionais (que incluem os binários nativos do Rollup)
+      - name: Install deps (omit optional)
+        run: npm ci --omit=optional || npm install --omit=optional
 
-      # Instala e, se falhar por bug do npm, faz fallback para install
-      - name: Install deps
-        run: npm ci || npm install
-
-      # Força o Rollup a NÃO usar o binário nativo (usa fallback JS)
+      # Build com fallback JS do Rollup (sem nativo)
       - name: Build
         run: npm run build
         env:
