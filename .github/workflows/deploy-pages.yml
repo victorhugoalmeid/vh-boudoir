@@ -17,23 +17,29 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      ROLLUP_SKIP_NODEJS_NATIVE: "1" 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node 22.12
         uses: actions/setup-node@v4
         with:
-          node-version: 24.6.0
+          node-version: 22.12.0
           cache: 'npm'
 
-      - name: Install deps
-        run: npm install
+      # EVITA instalar dependências opcionais (os binários nativos do Rollup)
+      - name: NPM config (no optional)
+        run: npm config set optional false
 
+      # Instala e, se falhar por bug do npm, faz fallback para install
+      - name: Install deps
+        run: npm ci || npm install
+
+      # Força o Rollup a NÃO usar o binário nativo (usa fallback JS)
       - name: Build
         run: npm run build
+        env:
+          ROLLUP_SKIP_NODEJS_NATIVE: "1"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
