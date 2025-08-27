@@ -1,6 +1,9 @@
-// Victor Hugo — Boudoir 
+// Victor Hugo — Boudoir
+// Mobile-first com header em 1 linha + brilho sutil, fundo preto-seda vinho,
+// Portfólio em “Tipos | Galeria”, lightbox e CTA fixo.
 
 import { useEffect, useMemo, useState } from "react";
+import { PORTFOLIO } from "./portfolio.data";
 
 // ==========================
 // Config
@@ -15,17 +18,6 @@ const SITE = {
   description:
     "Boudoir minimalista com direção gentil. Experiência confidencial e leve — feita pra você.",
 };
-
-// Demonstração (troque por imagens próprias em /public/portfolio/*.webp)
-const PORTFOLIO: Array<{ src: string; alt: string; category: string }>= [
-  { src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop", alt: "Silhueta elegante", category: "Silhuetas" },
-  { src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop", alt: "Retrato minimalista", category: "Retratos" },
-  { src: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop", alt: "P&B editorial", category: "P&B" },
-    { src: "https://images.unsplash.com/photo-1755162324589-2702dfcbbecf?q=80&w=690&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Praia", category: "Praia" },
-  { src: "https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?q=80&w=1200&auto=format&fit=crop", alt: "Close e textura", category: "Retratos" },
-  { src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=1200&auto=format&fit=crop", alt: "Janela e silhueta", category: "Silhuetas" },
-  { src: "https://images.unsplash.com/photo-1594026724063-fcf520d86e23?q=80&w=685&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Janela e silhueta", category: "Silhuetas" },
-];
 
 const PRICES = [
   { title: "Essencial", price: "R$ 550", features: ["1h30 de sessão", "1 look", "15 fotos tratadas", "Foto Extra: R$20"], highlight: false },
@@ -54,7 +46,9 @@ function waLink(number: string, message: string) {
   const digits = number.replace(/\D/g, "");
   return `https://wa.me/${digits}?text=${text}`;
 }
-function cx(...args: Array<string | false | null | undefined>) { return args.filter(Boolean).join(" "); }
+function cx(...args: Array<string | false | null | undefined>) {
+  return args.filter(Boolean).join(" ");
+}
 
 // ==========================
 // Component
@@ -64,12 +58,13 @@ export default function VictorHugoBoudoir() {
   const [activeCat, setActiveCat] = useState<string>("Todos");
   const [portfolioView, setPortfolioView] = useState<"Tipos" | "Galeria">("Tipos");
 
+  // categorias vindas do arquivo gerado
   const categories = useMemo(
     () => Array.from(new Set(PORTFOLIO.map(i => i.category))),
     []
   );
 
-  // Mapa por categoria: capa (primeira imagem) + contagem
+  // capa + contagem por categoria
   const categoryMeta = useMemo(() => {
     const map = new Map<string, { cover: string; alt: string; count: number }>();
     for (const img of PORTFOLIO) {
@@ -80,11 +75,14 @@ export default function VictorHugoBoudoir() {
   }, []);
 
   const images = useMemo(
-    () => activeCat === "Todos" ? PORTFOLIO : PORTFOLIO.filter(i => i.category === activeCat),
+    () => (activeCat === "Todos" ? PORTFOLIO : PORTFOLIO.filter(i => i.category === activeCat)),
     [activeCat]
   );
 
   useEffect(() => { document.title = SITE.title; }, []);
+
+  // fecha o lightbox ao trocar de categoria (evita índice fora do array)
+  useEffect(() => { setLightbox(null); }, [activeCat]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -120,7 +118,10 @@ export default function VictorHugoBoudoir() {
           <a href="#home" className="min-w-0 flex-1 truncate font-serif tracking-wide whitespace-nowrap">
             <span className="brand-shine">Victor Hugo - Fotografias</span>
           </a>
-          <a href={waLink(SITE.whatsappNumber, SITE.whatsappMessage)} className="shrink-0 rounded-full px-3 py-1.5 text-xs bg-white text-black hover:bg-zinc-200">
+          <a
+            href={waLink(SITE.whatsappNumber, SITE.whatsappMessage)}
+            className="shrink-0 rounded-full px-3 py-1.5 text-xs bg-white text-black hover:bg-zinc-200"
+          >
             Agendar
           </a>
         </div>
@@ -164,9 +165,9 @@ export default function VictorHugoBoudoir() {
                   onClick={() => setPortfolioView(tab)}
                   className={cx(
                     "px-3 py-1.5 text-[12px] rounded-full transition",
-                    portfolioView===tab ? "bg-white text-black" : "text-zinc-200 hover:bg-white/10"
+                    portfolioView === tab ? "bg-white text-black" : "text-zinc-200 hover:bg-white/10"
                   )}
-                  aria-pressed={portfolioView===tab}
+                  aria-pressed={portfolioView === tab}
                 >
                   {tab}
                 </button>
@@ -186,13 +187,13 @@ export default function VictorHugoBoudoir() {
                     onClick={() => {
                       setActiveCat(cat);
                       setPortfolioView("Galeria");
-                      setTimeout(()=>{
-                        document.getElementById("portfolio-gallery")?.scrollIntoView({behavior:"smooth", block:"start"});
+                      setTimeout(() => {
+                        document.getElementById("portfolio-gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
                       }, 0);
                     }}
                     aria-label={`Abrir galeria de ${cat}`}
                   >
-                    <img src={meta.cover} alt={meta.alt} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" />
+                    <img src={meta.cover} alt={meta.alt} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy" decoding="async" />
                     <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
                     <div className="absolute inset-x-2 bottom-2 rounded-2xl bg-black/40 backdrop-blur px-3 py-2 ring-1 ring-white/10">
                       <p className="text-[14px] font-medium">{cat}</p>
@@ -204,7 +205,7 @@ export default function VictorHugoBoudoir() {
             </div>
           )}
 
-          {/* GALERIA — chips + carrossel */}
+          {/* GALERIA — chips + grade responsiva (MOBILE-FIRST) */}
           {portfolioView === "Galeria" && (
             <>
               <div className="flex flex-wrap gap-2">
@@ -214,35 +215,44 @@ export default function VictorHugoBoudoir() {
                     onClick={() => setActiveCat(c)}
                     className={cx(
                       "px-3 py-1 text-[12px] rounded-full border transition",
-                      activeCat===c ? "bg-white text-black border-white"
-                                     : "border-white/15 text-zinc-300 hover:bg-white/10"
+                      activeCat === c ? "bg-white text-black border-white" : "border-white/15 text-zinc-300 hover:bg-white/10"
                     )}
-                    aria-pressed={activeCat===c}
+                    aria-pressed={activeCat === c}
                   >
                     {c}
                   </button>
                 ))}
               </div>
 
-              <div id="portfolio-gallery" className="mt-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4">
-                <div className="flex gap-3">
+              {/* grade -> 2 colunas no mobile, 3 no >=sm; cartões com proporção fixa */}
+              <div id="portfolio-gallery" className="mt-4 px-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {images.length === 0 ? (
-                    <div className="w-full text-center text-[13px] text-zinc-400 py-8">Sem fotos nesta categoria (ainda).</div>
+                    <div className="col-span-2 sm:col-span-3 text-center text-[13px] text-zinc-400 py-8">
+                      Sem fotos nesta categoria (ainda).
+                    </div>
                   ) : (
                     images.map((img, i) => (
                       <button
-                        key={img.src+i}
+                        key={img.src + i}
                         onClick={() => setLightbox(i)}
-                        className="snap-start shrink-0 min-w-[78%] sm:min-w-[55%] aspect-[4/5] rounded-3xl overflow-hidden ring-1 ring-white/10"
-                        aria-label={`Abrir imagem ${i+1}`}
+                        className="group relative aspect-[3/4] rounded-2xl overflow-hidden ring-1 ring-white/10 focus:outline-none"
+                        aria-label={`Abrir imagem ${i + 1}`}
                       >
-                        <img src={img.src} alt={img.alt} loading="lazy" className="h-full w-full object-cover" />
+                        <img
+                          src={img.src}
+                          alt={img.alt}
+                          loading="lazy"
+                          decoding="async"
+                          sizes="(max-width: 640px) 50vw, 33vw"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        />
                       </button>
                     ))
                   )}
                 </div>
               </div>
-              <p className="text-[12px] text-zinc-400">Dica: deslize para o lado e toque para ampliar.</p>
+              <p className="text-[12px] text-zinc-400 px-4 mt-2">Dica: toque para ampliar.</p>
             </>
           )}
         </div>
@@ -331,13 +341,18 @@ export default function VictorHugoBoudoir() {
 
       {/* Lightbox fullscreen */}
       {lightbox !== null && (
-        <div role="dialog" aria-modal className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-3" onClick={() => setLightbox(null)}>
-          <div className="relative w-full max-w-[680px]" onClick={(e)=>e.stopPropagation()}>
+        <div
+          role="dialog"
+          aria-modal
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-3"
+          onClick={() => setLightbox(null)}
+        >
+          <div className="relative w-full max-w-[680px]" onClick={(e) => e.stopPropagation()}>
             <img src={images[lightbox].src} alt={images[lightbox].alt} className="w-full h-auto rounded-xl ring-1 ring-white/10" />
             <button onClick={() => setLightbox(null)} aria-label="Fechar" className="absolute -top-12 right-0 text-zinc-300">✕</button>
             <div className="absolute -top-12 left-0 flex gap-6 text-zinc-300">
-              <button onClick={()=> setLightbox((v)=> (v! - 1 + images.length)%images.length)}>←</button>
-              <button onClick={()=> setLightbox((v)=> (v! + 1)%images.length)}>→</button>
+              <button onClick={() => setLightbox((v) => (v! - 1 + images.length) % images.length)}>←</button>
+              <button onClick={() => setLightbox((v) => (v! + 1) % images.length)}>→</button>
             </div>
           </div>
         </div>
@@ -367,33 +382,39 @@ function MetaHead() {
 
 function PriceCard({ title, price, features, highlight }:{ title:string; price:string; features:string[]; highlight?:boolean }){
   return (
-    <div className={cx("rounded-2xl p-5 ring-1", highlight?"bg-white text-black ring-white":"bg-white/5 text-zinc-100 ring-white/10") }>
+    <div className={cx("rounded-2xl p-5 ring-1", highlight ? "bg-white text-black ring-white" : "bg-white/5 text-zinc-100 ring-white/10")}>
       <div className="flex items-center justify-between">
         <h3 className="font-serif text-[20px]">{title}</h3>
         {highlight && <span className="text-[11px] px-2 py-1 rounded-full bg-black text-white">Popular</span>}
       </div>
-      <p className={cx("mt-1 text-[26px] font-semibold", highlight?"text-black":"text-white")}>{price}</p>
-      <ul className={cx("mt-3 space-y-1.5 text-[14px]", highlight?"text-zinc-700":"text-zinc-300")}>
-        {features.map((f,i)=>(<li key={i}>• {f}</li>))}
+      <p className={cx("mt-1 text-[26px] font-semibold", highlight ? "text-black" : "text-white")}>{price}</p>
+      <ul className={cx("mt-3 space-y-1.5 text-[14px]", highlight ? "text-zinc-700" : "text-zinc-300")}>
+        {features.map((f, i) => (<li key={i}>• {f}</li>))}
       </ul>
-      <a href={waLink(SITE.whatsappNumber, SITE.whatsappMessage)} className={cx("mt-4 inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm", highlight?"bg-black text-white hover:bg-zinc-800":"border border-white/15 hover:bg-white/10")}>
+      <a
+        href={waLink(SITE.whatsappNumber, SITE.whatsappMessage)}
+        className={cx(
+          "mt-4 inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm",
+          highlight ? "bg-black text-white hover:bg-zinc-800" : "border border-white/15 hover:bg-white/10"
+        )}
+      >
         Reservar pelo WhatsApp
       </a>
     </div>
-  )
+  );
 }
 
 function Faq({ q, a }:{ q:string; a:string }){
   const [open, setOpen] = useState(false);
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5">
-      <button onClick={()=>setOpen(v=>!v)} className="w-full px-4 py-3 flex items-center justify-between text-left">
+      <button onClick={() => setOpen(v => !v)} className="w-full px-4 py-3 flex items-center justify-between text-left">
         <span className="text-[15px]">{q}</span>
-        <span className="text-[18px] text-zinc-300">{open?"−":"+"}</span>
+        <span className="text-[18px] text-zinc-300">{open ? "−" : "+"}</span>
       </button>
       {open && <div className="px-4 pb-3 text-[14px] text-zinc-300">{a}</div>}
     </div>
-  )
+  );
 }
 
 function onSubmit(e: React.FormEvent<HTMLFormElement>){
@@ -407,7 +428,7 @@ function onSubmit(e: React.FormEvent<HTMLFormElement>){
 }
 
 // ==========================
-// Estilos utilitários injetados (bg seda vinho + brilho do nome)
+// Estilos utilitários (bg seda vinho + brilho do nome)
 // ==========================
 function StyleTag(){
   return (
