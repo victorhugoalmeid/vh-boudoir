@@ -376,6 +376,10 @@ function MetaHead() {
       <meta property="og:title" content={SITE.title} />
       <meta property="og:description" content={SITE.description} />
       <meta property="og:type" content="website" />
+      {/* Fonte display sensual (Didone) */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,600;6..96,700;6..96,900&display=swap" rel="stylesheet" />
     </>
   );
 }
@@ -435,6 +439,14 @@ function StyleTag(){
     <style
       // @ts-ignore
       dangerouslySetInnerHTML={{__html: `
+      /* Fonte do logo — Bodoni Moda (alto contraste, elegante) */
+      @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&display=swap');
+      .font-logo{
+        font-family: "Bodoni Moda", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        font-weight: 700;            /* presença mais marcante */
+        letter-spacing: 0.01em;      /* leve respiro */
+      }
+
       .bg-silk-wine{
         background:
           radial-gradient(1200px 600px at 50% -10%, rgba(122,32,57,0.18), transparent 70%),
@@ -442,6 +454,8 @@ function StyleTag(){
           radial-gradient(900px 600px at -10% 80%, rgba(110,28,52,0.14), transparent 70%),
           linear-gradient(180deg,#15161b 0%, #101116 40%, #0c0d12 100%);
       }
+
+      /* Brilho do nome (mantido) */
       .brand-shine{
         background: linear-gradient(90deg,#ffffff 0%,#fff5f7 25%,#ffffff 50%,#e7b9c9 75%,#ffffff 100%);
         -webkit-background-clip:text; background-clip:text; color:transparent;
@@ -449,6 +463,7 @@ function StyleTag(){
         text-shadow: 0 0 18px rgba(244,114,182,0.08);
       }
       @keyframes brandShine{ from{background-position:0% 50%} to{background-position:200% 50%} }
+
       .no-scrollbar::-webkit-scrollbar{ display:none }
       .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
       .safe-bottom{ padding-bottom: calc(env(safe-area-inset-bottom) + 0px); }
@@ -457,3 +472,4 @@ function StyleTag(){
     />
   );
 }
+
